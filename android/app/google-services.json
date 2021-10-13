@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "220022986315",
+    "firebase_url": "https://fifi-fdbd4-default-rtdb.firebaseio.com",
+    "project_id": "fifi-fdbd4",
+    "storage_bucket": "fifi-fdbd4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220022986315:android:56257acaa82ef0a4775fce",
+        "android_client_info": {
+          "package_name": "com.example.flutter_web_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220022986315-ojh074impl1ko2l5aubi040noktp1rm9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_web_test",
+            "certificate_hash": "f9b50685cc87a4026e3ae4b0493bb24ffb89e3dd"
+          }
+        },
+        {
+          "client_id": "220022986315-ebabo3fm4po283b7qtbcc583f7980i5s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgAqVc6VM38jWtlwJLDJ9o--U2nJypoFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220022986315-ebabo3fm4po283b7qtbcc583f7980i5s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
