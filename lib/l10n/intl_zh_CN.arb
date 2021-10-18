@@ -1,0 +1,12 @@
+{
+    "@@locale": "zh_CN",
+    "Alert_Delete": "删除",
+    "Alert_Error": "错误",
+    "Alert_Remind": "提醒",
+    "Alert_Finish": "完成",
+    "Alert_Warning": "警告",
+    "Button_Cancel": "取消",
+    "Button_Confirm": "确定",
+    "add_member_hint": "请输入姓名",
+    "existed_member": "該人員已存在"
+}

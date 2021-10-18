@@ -1,0 +1,14 @@
+{
+    "@@locale": "en",
+    "Alert_Delete": "DELETE",
+    "Alert_Error": "ERROR",
+    "Alert_Remind": "Remind",
+    "Alert_Finish": "FINISH",
+    "Alert_Warning": "WARNING",
+    "Button_Cancel": "Cancel",
+    "Button_Confirm": "Sure",
+    "add_member_hint": "Please type in member name",
+    "existed_member": "Member is existed",
+    "existed_mainDish": "MainDish is existed",
+    "existed_beverage": "Beverage is existed"
+}

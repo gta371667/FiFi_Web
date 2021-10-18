@@ -1,0 +1,14 @@
+{
+    "@@locale": "zh_TW",
+    "Alert_Delete": "刪除",
+    "Alert_Error": "錯誤",
+    "Alert_Remind": "提醒",
+    "Alert_Finish": "完成",
+    "Alert_Warning": "警告",
+    "Button_Cancel": "取消",
+    "Button_Confirm": "確定",
+    "add_member_hint": "請輸入姓名",
+    "existed_member": "該人員已存在",
+    "existed_mainDish": "該主餐已存在",
+    "existed_beverage": "該飲料已存在"
+}
