@@ -10,5 +10,6 @@
     "add_member_hint": "請輸入姓名",
     "existed_member": "該人員已存在",
     "existed_mainDish": "該主餐已存在",
-    "existed_beverage": "該飲料已存在"
+    "existed_beverage": "該飲料已存在",
+    "hint_sort": "排序(越小在前)"
 }

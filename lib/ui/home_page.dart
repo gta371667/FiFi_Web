@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // bloc.initFirebase();
+    bloc.initFirebase();
   }
 
   @override
@@ -103,13 +103,13 @@ class _HomePageState extends State<HomePage> {
     AddDataEnum addDataEnum,
     String hintText,
   ) {
-    showDialog<String>(
+    showDialog<InputData>(
       context: context,
       builder: (context) => AddDataDialog(
         hintText: hintText,
       ),
     ).then((value) {
-      if (value == null || value.isEmpty) return;
+      if (value == null || value.name.isEmpty) return;
 
       switch (addDataEnum) {
         case AddDataEnum.mainDish:
@@ -126,8 +126,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 執行新增人員
-  void _addMember(String name) {
-    bloc.addMember(name).listen(
+  void _addMember(InputData inputData) {
+    bloc.addMember(inputData).listen(
       (event) => {},
       onError: (err, stack) {
         showDialog(
@@ -146,8 +146,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 執行新增主餐
-  void _addMainDish(String name) {
-    bloc.addMainDish(name).listen(
+  void _addMainDish(InputData inputData) {
+    bloc.addMainDish(inputData).listen(
       (event) => {},
       onError: (err, stack) {
         showDialog(
@@ -166,8 +166,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 執行新增飲料
-  void _addBeverage(String name) {
-    bloc.addBeverage(name).listen(
+  void _addBeverage(InputData inputData) {
+    bloc.addBeverage(inputData).listen(
       (event) => {},
       onError: (err, stack) {
         showDialog(

@@ -10,5 +10,6 @@
     "add_member_hint": "Please type in member name",
     "existed_member": "Member is existed",
     "existed_mainDish": "MainDish is existed",
-    "existed_beverage": "Beverage is existed"
+    "existed_beverage": "Beverage is existed",
+    "hint_sort": "Sort (smaller first)"
 }

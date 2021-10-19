@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_test/generated/l10n.dart';
+import 'package:flutter_web_test/model/fifi.dart';
 
 enum AddDataEnum {
   /// 主餐
@@ -25,7 +27,11 @@ class AddDataDialog extends StatefulWidget {
 }
 
 class _AddDataDialogState extends State<AddDataDialog> {
+  /// 名稱
   final TextEditingController _textEditingController = TextEditingController();
+
+  /// 排序
+  final TextEditingController _sortController = TextEditingController(text: "0");
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +53,17 @@ class _AddDataDialogState extends State<AddDataDialog> {
                       controller: _textEditingController,
                       decoration: InputDecoration(
                         hintText: widget.hintText,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    TextField(
+                      controller: _sortController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                      ],
+                      decoration: InputDecoration(
+                        hintText: S.of(context).hint_sort,
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
@@ -91,7 +108,10 @@ class _AddDataDialogState extends State<AddDataDialog> {
               backgroundColor: Colors.blue,
             ),
             onPressed: () {
-              Navigator.of(context).pop(_textEditingController.text);
+              Navigator.of(context).pop(InputData(
+                name: _textEditingController.text,
+                sort: int.parse(_sortController.text),
+              ));
             },
           ),
         ),

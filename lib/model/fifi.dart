@@ -2,25 +2,22 @@
 class FiFiMenu {
   FiFiMenu({
     required this.addDateTime,
-    required this.name,
+    required this.memberName,
     this.mainDish,
     this.beverage,
   });
 
-  final String addDateTime;
-  final String name;
+  final String memberName;
+  final int addDateTime;
   MainDish? mainDish;
   Beverage? beverage;
 
   Map<String, dynamic> toMap() {
-    // var test = MainDish(name: '10254', addDateTime: '10254').toMap();
-    // test['tada'] = name;
-
     return {
+      'name': memberName,
+      'mainDish': mainDish?.name,
+      'beverage': beverage?.name,
       'addDateTime': addDateTime,
-      'name': name,
-      'mainDish': mainDish,
-      'beverage': beverage,
     };
   }
 }
@@ -28,55 +25,114 @@ class FiFiMenu {
 /// 主餐
 class MainDish {
   MainDish({
-    required this.addDateTime,
     required this.name,
+    required this.addDateTime,
+    this.sort = 0,
   });
 
-  final String addDateTime;
+  /// 名稱
   final String name;
 
+  /// 新增時間
+  final int addDateTime;
+
+  /// 排序
+  int sort;
+
+  factory MainDish.fromJson(Map<dynamic, dynamic> json) {
+    return MainDish(
+      name: json['name'],
+      addDateTime: json['addDateTime'],
+      sort: json['sort'],
+    );
+  }
+
   Map<String, dynamic> toMap() {
-    return {addDateTime: name};
+    return {
+      'name': name,
+      'addDateTime': addDateTime,
+      'sort': sort,
+    };
   }
 }
 
 /// 飲料
 class Beverage {
   Beverage({
-    required this.addDateTime,
     required this.name,
+    required this.addDateTime,
+    this.sort = 0,
   });
 
-  final String addDateTime;
+  /// 名稱
   final String name;
 
+  /// 新增時間
+  final int addDateTime;
+
+  /// 排序
+  int sort;
+
+  factory Beverage.fromJson(Map<dynamic, dynamic> json) {
+    return Beverage(
+      name: json['name'],
+      addDateTime: json['addDateTime'],
+      sort: json['sort'],
+    );
+  }
+
   Map<String, dynamic> toMap() {
-    return {addDateTime: name};
+    return {
+      'name': name,
+      'addDateTime': addDateTime,
+      'sort': sort,
+    };
   }
 }
 
 class MemberData {
   MemberData({
-    required this.addDateTime,
     required this.name,
-    this.mainDish,
-    this.beverage,
+    required this.addDateTime,
+    this.sort = 0,
   });
 
-  final String addDateTime;
+  /// 名稱
   final String name;
-  MainDish? mainDish;
-  Beverage? beverage;
+
+  /// 新增時間
+  final int addDateTime;
+
+  /// 排序
+  int sort;
+
+  factory MemberData.fromJson(Map<dynamic, dynamic> json) {
+    return MemberData(
+      name: json['name'],
+      addDateTime: json['addDateTime'],
+      sort: json['sort'],
+    );
+  }
 
   Map<String, dynamic> toMap() {
-    // var test = MainDish(name: '10254', addDateTime: '10254').toMap();
-    // test['tada'] = name;
-
     return {
-      'addDateTime': addDateTime,
       'name': name,
-      'mainDish': mainDish,
-      'beverage': beverage,
+      'addDateTime': addDateTime,
+      'sort': sort,
     };
   }
+}
+
+/// 輸入回傳
+class InputData {
+  /// 名稱
+  final String name;
+
+  /// 排序
+  final int sort;
+
+  InputData({
+    required this.name,
+    required this.sort,
+  });
 }

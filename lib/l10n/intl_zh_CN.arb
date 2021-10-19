@@ -8,5 +8,6 @@
     "Button_Cancel": "取消",
     "Button_Confirm": "确定",
     "add_member_hint": "请输入姓名",
-    "existed_member": "該人員已存在"
+    "existed_member": "該人員已存在",
+    "hint_sort": "排序(越小在前)"
 }

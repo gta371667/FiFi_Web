@@ -159,6 +159,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Sort (smaller first)`
+  String get hint_sort {
+    return Intl.message(
+      'Sort (smaller first)',
+      name: 'hint_sort',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

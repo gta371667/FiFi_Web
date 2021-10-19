@@ -37,7 +37,7 @@ class OrderItemWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(memberData.name),
+            child: Text(memberData.memberName),
           ),
           const SizedBox(width: 10),
           Expanded(
