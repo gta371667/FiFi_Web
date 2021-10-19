@@ -8,17 +8,36 @@ class HomePageBloc {
   final DatabaseReference db = FirebaseDatabase().reference();
 
   /// 人員流
-  BehaviorSubject<List<MemberData>> _memberSubject = BehaviorSubject.seeded([]);
+  BehaviorSubject<List<FiFiMenu>> _orderSubject = BehaviorSubject.seeded([]);
 
-  Stream<List<MemberData>> get memberStream => _memberSubject.stream;
+  Stream<List<FiFiMenu>> get orderStream => _orderSubject.stream;
 
-  List<MemberData> get currentMemberList => _memberSubject.value;
+  List<FiFiMenu> get currentOrderList => _orderSubject.value;
 
   /// 主餐列表
   List<MainDish> currentMainDishList = [];
 
   /// 飲料列表
   List<Beverage> currentBeverageList = [];
+
+  void testF() {
+    Map<String, dynamic> map = {};
+
+    map['Result'] = 1;
+    map['ResultDesc'] = '成功';
+
+    List<FiFiMenu> sss = [];
+
+    List.generate(
+      5,
+      (index) => sss.add(
+        FiFiMenu(addDateTime: 'addDateTime_$index', name: 'name_$index'),
+      ),
+    );
+
+    map['sss'] = sss.map((e) => e.toMap()).toList();
+    db.child('testF').update(map).then((value) => null);
+  }
 
   /// 監聽資料變化
   void initFirebase() {
@@ -49,20 +68,20 @@ class HomePageBloc {
 
       /// 人員
       var memberList = _mapToMemberList(memberMap);
-      _memberSubject.add(memberList);
+      _orderSubject.add(memberList);
     });
   }
 
   /// 新增人員
   Stream<void> addMember(String memberName) {
-    return Stream.value(currentMemberList).flatMap((value) {
+    return Stream.value(currentOrderList).flatMap((value) {
       int index = value.indexWhere((element) => element.name == memberName);
       if (index != -1) {
         throw S.current.existed_member;
       }
 
       return Stream.value(
-        MemberData(
+        FiFiMenu(
           addDateTime: DateTime.now().millisecondsSinceEpoch.toString(),
           name: memberName,
         ),
@@ -105,19 +124,19 @@ class HomePageBloc {
   }
 
   /// 選擇主餐事件
-  void selectMainDish(MemberData memberData, MainDish mainDish) {
+  void selectMainDish(FiFiMenu memberData, MainDish mainDish) {
     if (memberData.mainDish == mainDish) return;
 
     memberData.mainDish = mainDish;
-    _memberSubject.add(_memberSubject.value);
+    _orderSubject.add(_orderSubject.value);
   }
 
   /// 選擇飲料事件
-  void selectBeverage(MemberData memberData, Beverage beverage) {
+  void selectBeverage(FiFiMenu memberData, Beverage beverage) {
     if (memberData.beverage == beverage) return;
 
     memberData.beverage = beverage;
-    _memberSubject.add(_memberSubject.value);
+    _orderSubject.add(_orderSubject.value);
   }
 
   /// 清除某節點下所有資料
@@ -126,10 +145,10 @@ class HomePageBloc {
   }
 
   /// 轉換為人員列表
-  List<MemberData> _mapToMemberList(Map<dynamic, dynamic> map) {
+  List<FiFiMenu> _mapToMemberList(Map<dynamic, dynamic> map) {
     return map.entries
         .map(
-          (entry) => MemberData(addDateTime: entry.key, name: entry.value),
+          (entry) => FiFiMenu(addDateTime: entry.key, name: entry.value),
         )
         .toList();
   }

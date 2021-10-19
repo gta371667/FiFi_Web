@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_test/model/fifi.dart';
 
-typedef MainDishCallback = void Function(MemberData memberData, MainDish mainDish);
+typedef MainDishCallback = void Function(FiFiMenu memberData, MainDish mainDish);
 
-typedef BeverageCallback = void Function(MemberData memberData, Beverage beverage);
+typedef BeverageCallback = void Function(FiFiMenu memberData, Beverage beverage);
 
 /// 點餐item
 class OrderItemWidget extends StatelessWidget {
@@ -16,7 +16,7 @@ class OrderItemWidget extends StatelessWidget {
     required this.beverageCallback,
   }) : super(key: key);
 
-  final MemberData memberData;
+  final FiFiMenu memberData;
 
   /// 主餐列表
   final List<MainDish> mainDishList;

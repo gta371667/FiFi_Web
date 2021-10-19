@@ -1,16 +1,29 @@
 /// 菜單
-// class FiFiMenu {
-//   FiFiMenu({
-//     this.mainDish,
-//     this.beverage,
-//   });
-//
-//   /// 主餐
-//   MainDish? mainDish;
-//
-//   /// 飲料
-//   Beverage? beverage;
-// }
+class FiFiMenu {
+  FiFiMenu({
+    required this.addDateTime,
+    required this.name,
+    this.mainDish,
+    this.beverage,
+  });
+
+  final String addDateTime;
+  final String name;
+  MainDish? mainDish;
+  Beverage? beverage;
+
+  Map<String, dynamic> toMap() {
+    // var test = MainDish(name: '10254', addDateTime: '10254').toMap();
+    // test['tada'] = name;
+
+    return {
+      'addDateTime': addDateTime,
+      'name': name,
+      'mainDish': mainDish,
+      'beverage': beverage,
+    };
+  }
+}
 
 /// 主餐
 class MainDish {
@@ -56,9 +69,14 @@ class MemberData {
   Beverage? beverage;
 
   Map<String, dynamic> toMap() {
-    var test = MainDish(name: '10254', addDateTime: '10254').toMap();
-    test['tada'] = name;
+    // var test = MainDish(name: '10254', addDateTime: '10254').toMap();
+    // test['tada'] = name;
 
-    return {addDateTime: test};
+    return {
+      'addDateTime': addDateTime,
+      'name': name,
+      'mainDish': mainDish,
+      'beverage': beverage,
+    };
   }
 }

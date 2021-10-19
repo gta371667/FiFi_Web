@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    bloc.initFirebase();
+    // bloc.initFirebase();
   }
 
   @override
@@ -56,6 +56,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: const Text('beverage'),
               ),
+              TextButton(
+                onPressed: () => bloc.testF(),
+                child: const Text('test'),
+              ),
             ],
           ),
         ],
@@ -65,8 +69,8 @@ class _HomePageState extends State<HomePage> {
 
   /// 人員列表
   Widget _buildMember() {
-    return StreamBuilder<List<MemberData>>(
-      stream: bloc.memberStream,
+    return StreamBuilder<List<FiFiMenu>>(
+      stream: bloc.orderStream,
       builder: (context, snapshot) {
         var dataList = snapshot.data ?? [];
 
