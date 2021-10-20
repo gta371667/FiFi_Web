@@ -1,3 +1,4 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_test/generated/l10n.dart';
 import 'package:flutter_web_test/model/fifi.dart';
@@ -59,6 +60,19 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () => bloc.saveOrder(),
                 child: const Text('test'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Clipboard.setData(const ClipboardData(text: "_copy"));
+
+                  FlutterClipboard.copy(bloc.getCopyText()).then((value) => null);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Copied to Clipboard"),
+                    ),
+                  );
+                },
+                child: const Text('copy'),
               ),
             ],
           ),

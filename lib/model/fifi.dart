@@ -11,10 +11,22 @@ class FiFiMenu {
   Beverage? beverage;
 
   factory FiFiMenu.fromJson(Map<dynamic, dynamic> json) {
+    String? m = json['mainDish'];
+    String? b = json['beverage'];
+
+    MainDish? m1;
+    Beverage? b1;
+    if (m != null) {
+      m1 = MainDish(addDateTime: 0, name: m);
+    }
+    if (b != null) {
+      b1 = Beverage(addDateTime: 0, name: b);
+    }
+
     return FiFiMenu(
       memberName: json['memberName'] ?? "",
-      mainDish: json['memberName'],
-      beverage: json['beverage'],
+      mainDish: m1,
+      beverage: b1,
     );
   }
 
@@ -46,9 +58,9 @@ class MainDish {
 
   factory MainDish.fromJson(Map<dynamic, dynamic> json) {
     return MainDish(
-      name: json['name'],
-      addDateTime: json['addDateTime'],
-      sort: json['sort'],
+      name: json['name'] ?? "",
+      addDateTime: json['addDateTime'] ?? 0,
+      sort: json['sort'] ?? 0,
     );
   }
 
@@ -80,9 +92,9 @@ class Beverage {
 
   factory Beverage.fromJson(Map<dynamic, dynamic> json) {
     return Beverage(
-      name: json['name'],
-      addDateTime: json['addDateTime'],
-      sort: json['sort'],
+      name: json['name'] ?? "",
+      addDateTime: json['addDateTime'] ?? 0,
+      sort: json['sort'] ?? 0,
     );
   }
 

@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import "package:collection/collection.dart";
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_web_test/generated/l10n.dart';
 import 'package:flutter_web_test/model/fifi.dart';
@@ -128,7 +127,8 @@ class HomePageBloc {
     if (memberData.mainDish == mainDish) return;
 
     memberData.mainDish = mainDish;
-    _orderSubject.add(_orderSubject.value);
+    // _orderSubject.add(_orderSubject.value);
+    saveOrder();
   }
 
   /// 選擇飲料事件
@@ -136,7 +136,9 @@ class HomePageBloc {
     if (memberData.beverage == beverage) return;
 
     memberData.beverage = beverage;
-    _orderSubject.add(_orderSubject.value);
+    // _orderSubject.add(_orderSubject.value);
+
+    saveOrder();
   }
 
   /// 清除某節點下所有資料
@@ -146,29 +148,33 @@ class HomePageBloc {
 
   /// 更新主餐
   void _updateMainDish(List<dynamic> data) {
-    currentMainDishList = data.map((e) => MainDish.fromJson(e)).toList();
+    currentMainDishList = data.where((element) => element != null).map((e) => MainDish.fromJson(e)).toList();
     currentMainDishList.sort((a1, a2) {
       if (a1.sort != a2.sort) {
         return a1.sort.compareTo(a2.sort);
       }
       return a1.addDateTime.compareTo(a2.addDateTime);
     });
+
+    currentMainDishList.insert(0, MainDish.fromJson({}));
   }
 
   /// 更新飲料
   void _updateBeverage(List<dynamic> data) {
-    currentBeverageList = data.map((e) => Beverage.fromJson(e)).toList();
+    currentBeverageList = data.where((element) => element != null).map((e) => Beverage.fromJson(e)).toList();
     currentBeverageList.sort((a1, a2) {
       if (a1.sort != a2.sort) {
         return a1.sort.compareTo(a2.sort);
       }
       return a1.addDateTime.compareTo(a2.addDateTime);
     });
+
+    currentBeverageList.insert(0, Beverage.fromJson({}));
   }
 
   /// 更新人員
   void _updateMember(List<dynamic> data) {
-    currentMemberList = data.map((e) => MemberData.fromJson(e)).toList();
+    currentMemberList = data.where((element) => element != null).map((e) => MemberData.fromJson(e)).toList();
     currentMemberList.sort((a1, a2) {
       if (a1.sort != a2.sort) {
         return a2.sort.compareTo(a1.sort);
@@ -182,20 +188,28 @@ class HomePageBloc {
     var data = currentMemberList.map(
       (e) {
         MainDish? mainDish;
+        Beverage? beverage;
+        int index = todayOrder.indexWhere((element) => e.name == element.memberName);
+        if (index != -1) {
+          int mIdx = currentMainDishList.indexWhere(
+            (element) => element.name == todayOrder[index].mainDish?.name,
+          );
+          if (mIdx != -1) {
+            mainDish = currentMainDishList[mIdx];
+          }
 
-        int mIndex = todayOrder.indexWhere((element) => e.name == element.memberName);
-        if (mIndex != -1) {
-          int intex =
-              currentMainDishList.indexWhere((element) => element.name == todayOrder[mIndex].mainDish?.name);
-
-          if (intex != -1) {
-            mainDish = currentMainDishList[intex];
+          int bIdx = currentBeverageList.indexWhere(
+            (element) => element.name == todayOrder[index].beverage?.name,
+          );
+          if (bIdx != -1) {
+            beverage = currentBeverageList[bIdx];
           }
         }
 
         return FiFiMenu(
           memberName: e.name,
           mainDish: mainDish,
+          beverage: beverage,
         );
       },
     ).toList();
@@ -212,4 +226,36 @@ class HomePageBloc {
 
   /// 今日時間 yyyy-MM-dd
   String get _todayKey => DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+  /// 複製文字
+  /// ex：
+  /// 打拋雞丁 x 3 (賢、維、彭)
+  /// 塔香蛤蜊 x 2 (冠、William)
+  ///
+  /// 冰綠 x 1 (賢)
+  /// 溫綠 x 2 (維、William)
+  /// 冰紅 x 1 (彭)
+  /// 溫紅 x 1 (冠)
+  String getCopyText() {
+    var mainDishMap = groupBy<FiFiMenu, String>(currentOrderList, (obj) => obj.mainDish?.name ?? "")
+      ..remove("");
+
+    String text = "";
+    mainDishMap.forEach((key, value) {
+      text += "$key x ${value.length} (";
+      text += value.map((e) => e.memberName).join("、");
+      text += ")\n";
+    });
+
+    text += "\n";
+    var beverageMap = groupBy<FiFiMenu, String>(currentOrderList, (obj) => obj.beverage?.name ?? "")
+      ..remove("");
+    beverageMap.forEach((key, value) {
+      text += "$key x ${value.length} (";
+      text += value.map((e) => e.memberName).join("、");
+      text += ")\n";
+    });
+
+    return text.substring(0, text.length - 1);
+  }
 }
