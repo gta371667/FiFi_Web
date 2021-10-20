@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_web_test/generated/l10n.dart';
 import 'package:flutter_web_test/model/fifi.dart';
 import 'package:flutter_web_test/res/firebase_path.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomePageBloc {
@@ -23,55 +26,6 @@ class HomePageBloc {
   /// 人員列表
   List<MemberData> currentMemberList = [];
 
-  void testF() {
-    Map<String, dynamic> map = {};
-
-    List<FiFiMenu> sss = [];
-
-    List.generate(
-      5,
-      (index) => sss.add(
-        FiFiMenu(addDateTime: index, memberName: 'name_$index'),
-      ),
-    );
-
-    map['sss'] = sss.map((e) => e.toMap()).toList();
-    db.child('testF').update(map).then((value) => null);
-  }
-
-  /// 更新主餐
-  void _updateMainDish(List<dynamic> data) {
-    currentMainDishList = data.map((e) => MainDish.fromJson(e)).toList();
-    currentMainDishList.sort((a1, a2) {
-      if (a1.sort != a2.sort) {
-        return a1.sort.compareTo(a2.sort);
-      }
-      return a1.addDateTime.compareTo(a2.addDateTime);
-    });
-  }
-
-  /// 更新飲料
-  void _updateBeverage(List<dynamic> data) {
-    currentBeverageList = data.map((e) => Beverage.fromJson(e)).toList();
-    currentBeverageList.sort((a1, a2) {
-      if (a1.sort != a2.sort) {
-        return a1.sort.compareTo(a2.sort);
-      }
-      return a1.addDateTime.compareTo(a2.addDateTime);
-    });
-  }
-
-  /// 更新人員
-  void _updateMember(List<dynamic> data) {
-    currentMemberList = data.map((e) => MemberData.fromJson(e)).toList();
-    currentMemberList.sort((a1, a2) {
-      if (a1.sort != a2.sort) {
-        return a2.sort.compareTo(a1.sort);
-      }
-      return a1.addDateTime.compareTo(a2.addDateTime);
-    });
-  }
-
   /// 監聽資料變化
   void initFirebase() {
     db.onValue.listen((event) {
@@ -82,6 +36,7 @@ class HomePageBloc {
       List<dynamic> mainDishMap = event.snapshot.value[FirebasePath.mainDish] ?? [];
       List<dynamic> beverageMap = event.snapshot.value[FirebasePath.beverage] ?? [];
       List<dynamic> memberMap = event.snapshot.value[FirebasePath.member] ?? [];
+      List<dynamic> todayOrder = event.snapshot.value[FirebasePath.order]?[_todayKey] ?? [];
 
       /// 主餐
       _updateMainDish(mainDishMap);
@@ -93,21 +48,8 @@ class HomePageBloc {
       _updateMember(memberMap);
 
       /// 訂單
-      _updateOrder();
+      _updateOrder(todayOrder.map((e) => FiFiMenu.fromJson(e)).toList());
     });
-  }
-
-  /// 更新訂單
-  void _updateOrder() {
-    var data = currentMemberList
-        .map(
-          (e) => FiFiMenu(
-            addDateTime: DateTime.now().millisecondsSinceEpoch,
-            memberName: e.name,
-          ),
-        )
-        .toList();
-    _orderSubject.add(data);
   }
 
   /// 新增人員
@@ -201,4 +143,73 @@ class HomePageBloc {
   void cleanByPath(String path) {
     db.child(path).set(null).then((value) => null);
   }
+
+  /// 更新主餐
+  void _updateMainDish(List<dynamic> data) {
+    currentMainDishList = data.map((e) => MainDish.fromJson(e)).toList();
+    currentMainDishList.sort((a1, a2) {
+      if (a1.sort != a2.sort) {
+        return a1.sort.compareTo(a2.sort);
+      }
+      return a1.addDateTime.compareTo(a2.addDateTime);
+    });
+  }
+
+  /// 更新飲料
+  void _updateBeverage(List<dynamic> data) {
+    currentBeverageList = data.map((e) => Beverage.fromJson(e)).toList();
+    currentBeverageList.sort((a1, a2) {
+      if (a1.sort != a2.sort) {
+        return a1.sort.compareTo(a2.sort);
+      }
+      return a1.addDateTime.compareTo(a2.addDateTime);
+    });
+  }
+
+  /// 更新人員
+  void _updateMember(List<dynamic> data) {
+    currentMemberList = data.map((e) => MemberData.fromJson(e)).toList();
+    currentMemberList.sort((a1, a2) {
+      if (a1.sort != a2.sort) {
+        return a2.sort.compareTo(a1.sort);
+      }
+      return a1.addDateTime.compareTo(a2.addDateTime);
+    });
+  }
+
+  /// 更新訂單
+  void _updateOrder(List<FiFiMenu> todayOrder) {
+    var data = currentMemberList.map(
+      (e) {
+        MainDish? mainDish;
+
+        int mIndex = todayOrder.indexWhere((element) => e.name == element.memberName);
+        if (mIndex != -1) {
+          int intex =
+              currentMainDishList.indexWhere((element) => element.name == todayOrder[mIndex].mainDish?.name);
+
+          if (intex != -1) {
+            mainDish = currentMainDishList[intex];
+          }
+        }
+
+        return FiFiMenu(
+          memberName: e.name,
+          mainDish: mainDish,
+        );
+      },
+    ).toList();
+    _orderSubject.add(data);
+  }
+
+  /// 儲存訂單
+  void saveOrder() {
+    Map<String, dynamic> map = {};
+    map[_todayKey] = currentOrderList.map((e) => e.toMap()).toList();
+
+    db.child(FirebasePath.order).update(map).then((value) => null);
+  }
+
+  /// 今日時間 yyyy-MM-dd
+  String get _todayKey => DateFormat("yyyy-MM-dd").format(DateTime.now());
 }

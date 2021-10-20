@@ -1,23 +1,28 @@
 /// 菜單
 class FiFiMenu {
   FiFiMenu({
-    required this.addDateTime,
     required this.memberName,
     this.mainDish,
     this.beverage,
   });
 
   final String memberName;
-  final int addDateTime;
   MainDish? mainDish;
   Beverage? beverage;
 
+  factory FiFiMenu.fromJson(Map<dynamic, dynamic> json) {
+    return FiFiMenu(
+      memberName: json['memberName'] ?? "",
+      mainDish: json['memberName'],
+      beverage: json['beverage'],
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
-      'name': memberName,
+      'memberName': memberName,
       'mainDish': mainDish?.name,
       'beverage': beverage?.name,
-      'addDateTime': addDateTime,
     };
   }
 }

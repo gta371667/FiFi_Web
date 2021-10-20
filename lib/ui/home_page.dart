@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                 child: const Text('beverage'),
               ),
               TextButton(
-                onPressed: () => bloc.testF(),
+                onPressed: () => bloc.saveOrder(),
                 child: const Text('test'),
               ),
             ],
