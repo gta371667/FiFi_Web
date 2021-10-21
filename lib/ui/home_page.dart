@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
       top: false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("aaaa"),
+          title: Text("FiFi Menu (${bloc.todayKey})"),
         ),
         body: Stack(
           children: [
@@ -79,14 +79,14 @@ class _HomePageState extends State<HomePage> {
                 memberData: data,
                 beverageList: bloc.currentBeverageList,
                 mainDishList: bloc.currentMainDishList,
-                beverageCallback: (memberData, beverage) {
-                  bloc.selectBeverage(memberData, beverage);
+                beverageCallback: (menu, beverage) {
+                  bloc.selectBeverage(menu, beverage);
                 },
-                mainDishCallback: (memberData, mainDish) {
-                  bloc.selectMainDish(memberData, mainDish);
+                mainDishCallback: (menu, mainDish) {
+                  bloc.selectMainDish(menu, mainDish);
                 },
-                deleteCallback: (memberData) {
-                  bloc.deleteMember(memberData.memberName);
+                deleteCallback: (menu) {
+                  bloc.deleteMember(menu.memberData.name);
                 },
               ),
             );
@@ -122,17 +122,11 @@ class _HomePageState extends State<HomePage> {
           child: const Text('beverage'),
         ),
         TextButton(
-          onPressed: () {
-            // bloc.deleteMember();
-          },
-          child: const Text('test'),
-        ),
-        TextButton(
           onPressed: () async {
             // Clipboard.setData(const ClipboardData(text: "_copy"));
             String copyText = bloc.getCopyText();
             if (copyText.isEmpty) return;
-
+            showText();
             FlutterClipboard.copy(copyText).then((value) => null);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -228,6 +222,20 @@ class _HomePageState extends State<HomePage> {
               cancelable: false,
             );
           },
+        );
+      },
+    );
+  }
+
+  void showText() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return UserPromptDialog(
+          promptEnum: UserPromptEnum.error,
+          buttonEnum: UserPromptButtonEnum.one,
+          content: bloc.getCopyText(),
+          cancelable: false,
         );
       },
     );

@@ -39,23 +39,23 @@ class OrderItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.only(left: 15),
       child: Row(
         children: [
           Expanded(
-            child: Text(memberData.memberName),
+            child: Text(memberData.memberData.name),
           ),
           const SizedBox(width: 10),
-          IconButton(
-            onPressed: () => deleteCallback.call(memberData),
-            icon: const Icon(Icons.delete),
-          ),
           Expanded(
             child: _buildMainDish(),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: _buildBeverage(),
+          ),
+          IconButton(
+            onPressed: () => deleteCallback.call(memberData),
+            icon: const Icon(Icons.delete),
           ),
         ],
       ),

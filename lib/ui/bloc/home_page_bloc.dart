@@ -40,7 +40,7 @@ class HomePageBloc {
       Map<dynamic, dynamic> mainDishMap = event.snapshot.value[FirebasePath.mainDish] ?? {};
       Map<dynamic, dynamic> beverageMap = event.snapshot.value[FirebasePath.beverage] ?? {};
       Map<dynamic, dynamic> memberMap = event.snapshot.value[FirebasePath.member] ?? {};
-      Map<dynamic, dynamic> todayOrder = event.snapshot.value[FirebasePath.order]?[_todayKey] ?? {};
+      Map<dynamic, dynamic> todayOrder = event.snapshot.value[FirebasePath.order]?[todayKey] ?? {};
 
       /// 主餐
       _updateMainDish(mainDishMap);
@@ -55,7 +55,7 @@ class HomePageBloc {
       var c = todayOrder;
 
       /// 訂單
-      _updateOrder([]);
+      _setOrderList(todayOrder.entries.map((e) => FiFiMenu.fromJson(e.value)).toList());
     });
   }
 
@@ -87,22 +87,6 @@ class HomePageBloc {
         .doOnDone(() => _loadingSubject.add(false));
   }
 
-  /// 刪除人員
-  void deleteMember(String memberName) {
-    int mIdx = currentMemberList.indexWhere((element) => element.name == memberName);
-
-    if (mIdx != -1) {
-      db
-          .child(FirebasePath.member)
-          .child(currentMemberList[mIdx].addDateTime.toString())
-          .remove()
-          .asStream()
-          .doOnListen(() => _loadingSubject.add(true))
-          .doOnDone(() => _loadingSubject.add(false))
-          .listen((value) => {});
-    }
-  }
-
   /// 新增主餐
   Stream<void> addMainDish(InputData inputData) {
     return Stream.value(currentMainDishList)
@@ -129,6 +113,22 @@ class HomePageBloc {
         })
         .doOnListen(() => _loadingSubject.add(true))
         .doOnDone(() => _loadingSubject.add(false));
+  }
+
+  /// 刪除人員
+  void deleteMember(String memberName) {
+    int mIdx = currentMemberList.indexWhere((element) => element.name == memberName);
+
+    if (mIdx != -1) {
+      db
+          .child(FirebasePath.member)
+          .child(currentMemberList[mIdx].addDateTime.toString())
+          .remove()
+          .asStream()
+          .doOnListen(() => _loadingSubject.add(true))
+          .doOnDone(() => _loadingSubject.add(false))
+          .listen((value) => {});
+    }
   }
 
   /// 新增飲料
@@ -160,21 +160,16 @@ class HomePageBloc {
   }
 
   /// 選擇主餐事件
-  void selectMainDish(FiFiMenu memberData, MainDish mainDish) {
-    if (memberData.mainDish == mainDish) return;
-
-    memberData.mainDish = mainDish;
-    // _orderSubject.add(_orderSubject.value);
+  void selectMainDish(FiFiMenu fiFiMenu, MainDish mainDish) {
+    if (fiFiMenu.mainDish == mainDish) return;
+    fiFiMenu.mainDish = mainDish;
     saveOrder();
   }
 
   /// 選擇飲料事件
-  void selectBeverage(FiFiMenu memberData, Beverage beverage) {
-    if (memberData.beverage == beverage) return;
-
-    memberData.beverage = beverage;
-    // _orderSubject.add(_orderSubject.value);
-
+  void selectBeverage(FiFiMenu fiFiMenu, Beverage beverage) {
+    if (fiFiMenu.beverage == beverage) return;
+    fiFiMenu.beverage = beverage;
     saveOrder();
   }
 
@@ -224,13 +219,13 @@ class HomePageBloc {
     });
   }
 
-  /// 更新訂單
-  void _updateOrder(List<FiFiMenu> todayOrder) {
+  /// 更新訂單列表
+  void _setOrderList(List<FiFiMenu> todayOrder) {
     var data = currentMemberList.map(
       (e) {
         MainDish? mainDish;
         Beverage? beverage;
-        int index = todayOrder.indexWhere((element) => e.name == element.memberName);
+        int index = todayOrder.indexWhere((element) => e.addDateTime == element.memberData.addDateTime);
         if (index != -1) {
           int mIdx = currentMainDishList.indexWhere(
             (element) => element.name == todayOrder[index].mainDish?.name,
@@ -248,25 +243,28 @@ class HomePageBloc {
         }
 
         return FiFiMenu(
-          memberName: e.name,
+          memberData: e,
           mainDish: mainDish,
           beverage: beverage,
         );
       },
     ).toList();
     _orderSubject.add(data);
+
+    saveOrder();
   }
 
-  /// 儲存訂單
+  /// 更新訂單至DB
   void saveOrder() {
-    Map<String, dynamic> map = {};
-    map[_todayKey] = currentOrderList.map((e) => {e.memberName: e.toMap()}).toList();
+    var map = currentOrderList
+        .asMap()
+        .map((key, value) => MapEntry(value.memberData.addDateTime.toString(), value.toMap()));
 
-    db.child(FirebasePath.order).update(map).then((value) => null);
+    db.child(FirebasePath.order).child(todayKey).set(map).then((value) => null);
   }
 
   /// 今日時間 yyyy-MM-dd
-  String get _todayKey => DateFormat("yyyy-MM-dd").format(DateTime.now());
+  String get todayKey => DateFormat("yyyy-MM-dd").format(DateTime.now());
 
   /// 複製文字
   /// ex：
@@ -284,7 +282,7 @@ class HomePageBloc {
     String text = "";
     mainDishMap.forEach((key, value) {
       text += "$key x ${value.length} (";
-      text += value.map((e) => e.memberName).join("、");
+      text += value.map((e) => e.memberData.name).join("、");
       text += ")\n";
     });
 
@@ -293,7 +291,7 @@ class HomePageBloc {
       ..remove("");
     beverageMap.forEach((key, value) {
       text += "$key x ${value.length} (";
-      text += value.map((e) => e.memberName).join("、");
+      text += value.map((e) => e.memberData.name).join("、");
       text += ")\n";
     });
 
