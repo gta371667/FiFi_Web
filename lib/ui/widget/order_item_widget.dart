@@ -5,6 +5,8 @@ typedef MainDishCallback = void Function(FiFiMenu memberData, MainDish mainDish)
 
 typedef BeverageCallback = void Function(FiFiMenu memberData, Beverage beverage);
 
+typedef DeleteCallback = void Function(FiFiMenu memberData);
+
 /// 點餐item
 class OrderItemWidget extends StatelessWidget {
   const OrderItemWidget({
@@ -14,6 +16,7 @@ class OrderItemWidget extends StatelessWidget {
     required this.beverageList,
     required this.mainDishCallback,
     required this.beverageCallback,
+    required this.deleteCallback,
   }) : super(key: key);
 
   final FiFiMenu memberData;
@@ -30,6 +33,9 @@ class OrderItemWidget extends StatelessWidget {
   /// 選擇飲料事件
   final BeverageCallback beverageCallback;
 
+  /// 選擇飲料事件
+  final DeleteCallback deleteCallback;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -40,6 +46,10 @@ class OrderItemWidget extends StatelessWidget {
             child: Text(memberData.memberName),
           ),
           const SizedBox(width: 10),
+          IconButton(
+            onPressed: () => deleteCallback.call(memberData),
+            icon: const Icon(Icons.delete),
+          ),
           Expanded(
             child: _buildMainDish(),
           ),

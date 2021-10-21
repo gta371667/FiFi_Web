@@ -59,7 +59,7 @@ class MainDish {
   factory MainDish.fromJson(Map<dynamic, dynamic> json) {
     return MainDish(
       name: json['name'] ?? "",
-      addDateTime: json['addDateTime'] ?? 0,
+      addDateTime: json['addDateTime'] ?? DateTime.now().millisecondsSinceEpoch,
       sort: json['sort'] ?? 0,
     );
   }
@@ -93,7 +93,7 @@ class Beverage {
   factory Beverage.fromJson(Map<dynamic, dynamic> json) {
     return Beverage(
       name: json['name'] ?? "",
-      addDateTime: json['addDateTime'] ?? 0,
+      addDateTime: json['addDateTime'] ?? DateTime.now().millisecondsSinceEpoch,
       sort: json['sort'] ?? 0,
     );
   }
@@ -125,9 +125,9 @@ class MemberData {
 
   factory MemberData.fromJson(Map<dynamic, dynamic> json) {
     return MemberData(
-      name: json['name'],
-      addDateTime: json['addDateTime'],
-      sort: json['sort'],
+      name: json['name'] ?? "",
+      addDateTime: json['addDateTime'] ?? DateTime.now().millisecondsSinceEpoch,
+      sort: json['sort'] ?? 0,
     );
   }
 

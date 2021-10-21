@@ -5,6 +5,7 @@ import 'package:flutter_web_test/model/fifi.dart';
 import 'package:flutter_web_test/ui/bloc/home_page_bloc.dart';
 import 'package:flutter_web_test/ui/dialog/add_data_dialog.dart';
 import 'package:flutter_web_test/ui/dialog/user_prompt_dialog.dart';
+import 'package:flutter_web_test/ui/widget/first_loading_widget.dart';
 import 'package:flutter_web_test/ui/widget/order_item_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,59 +26,39 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("aaaa"),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("aaaa"),
+        ),
+        body: Stack(
+          children: [
+            Column(
+              children: <Widget>[
+                Expanded(
+                  child: _buildMember(),
+                ),
+                _buildBottom(),
+              ],
+            ),
+            _buildLoading(),
+          ],
+        ),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: _buildMember(),
-          ),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () => _showAddDataDialog(
-                  AddDataEnum.member,
-                  S.of(context).add_member_hint,
-                ),
-                child: const Text('addMember'),
-              ),
-              TextButton(
-                onPressed: () => _showAddDataDialog(
-                  AddDataEnum.mainDish,
-                  'mainDish',
-                ),
-                child: const Text('mainDish'),
-              ),
-              TextButton(
-                onPressed: () => _showAddDataDialog(
-                  AddDataEnum.beverage,
-                  'beverage',
-                ),
-                child: const Text('beverage'),
-              ),
-              TextButton(
-                onPressed: () => bloc.saveOrder(),
-                child: const Text('test'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  // Clipboard.setData(const ClipboardData(text: "_copy"));
+    );
+  }
 
-                  FlutterClipboard.copy(bloc.getCopyText()).then((value) => null);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Copied to Clipboard"),
-                    ),
-                  );
-                },
-                child: const Text('copy'),
-              ),
-            ],
-          ),
-        ],
-      ),
+  /// 載入中
+  Widget _buildLoading() {
+    return StreamBuilder<bool>(
+      stream: bloc.loadingStream,
+      initialData: false,
+      builder: (context, snapshot) {
+        bool isLoading = snapshot.requireData;
+
+        return isLoading ? const FirstLoadingWidget() : const SizedBox();
+      },
     );
   }
 
@@ -104,11 +85,64 @@ class _HomePageState extends State<HomePage> {
                 mainDishCallback: (memberData, mainDish) {
                   bloc.selectMainDish(memberData, mainDish);
                 },
+                deleteCallback: (memberData) {
+                  bloc.deleteMember(memberData.memberName);
+                },
               ),
             );
           },
         );
       },
+    );
+  }
+
+  /// 底部功能
+  Widget _buildBottom() {
+    return Row(
+      children: [
+        TextButton(
+          onPressed: () => _showAddDataDialog(
+            AddDataEnum.member,
+            S.of(context).add_member_hint,
+          ),
+          child: const Text('addMember'),
+        ),
+        TextButton(
+          onPressed: () => _showAddDataDialog(
+            AddDataEnum.mainDish,
+            'mainDish',
+          ),
+          child: const Text('mainDish'),
+        ),
+        TextButton(
+          onPressed: () => _showAddDataDialog(
+            AddDataEnum.beverage,
+            'beverage',
+          ),
+          child: const Text('beverage'),
+        ),
+        TextButton(
+          onPressed: () {
+            // bloc.deleteMember();
+          },
+          child: const Text('test'),
+        ),
+        TextButton(
+          onPressed: () async {
+            // Clipboard.setData(const ClipboardData(text: "_copy"));
+            String copyText = bloc.getCopyText();
+            if (copyText.isEmpty) return;
+
+            FlutterClipboard.copy(copyText).then((value) => null);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Copied to Clipboard"),
+              ),
+            );
+          },
+          child: const Text('copy'),
+        ),
+      ],
     );
   }
 
