@@ -40,7 +40,7 @@ class HomePageBloc {
       Map<dynamic, dynamic> mainDishMap = event.snapshot.value[FirebasePath.mainDish] ?? {};
       Map<dynamic, dynamic> beverageMap = event.snapshot.value[FirebasePath.beverage] ?? {};
       Map<dynamic, dynamic> memberMap = event.snapshot.value[FirebasePath.member] ?? {};
-      List<dynamic> todayOrder = event.snapshot.value[FirebasePath.order]?[_todayKey] ?? [];
+      Map<dynamic, dynamic> todayOrder = event.snapshot.value[FirebasePath.order]?[_todayKey] ?? {};
 
       /// 主餐
       _updateMainDish(mainDishMap);
@@ -51,8 +51,11 @@ class HomePageBloc {
       /// 人員
       _updateMember(memberMap);
 
+      var g = todayOrder;
+      var c = todayOrder;
+
       /// 訂單
-      _updateOrder(todayOrder.map((e) => FiFiMenu.fromJson(e)).toList());
+      _updateOrder([]);
     });
   }
 
@@ -126,55 +129,31 @@ class HomePageBloc {
         })
         .doOnListen(() => _loadingSubject.add(true))
         .doOnDone(() => _loadingSubject.add(false));
-
-    // return Stream.value(currentMainDishList)
-    //     .flatMap((value) {
-    //       int index = value.indexWhere((element) => element.name == mainDish.name);
-    //       if (index != -1) {
-    //         throw S.current.existed_member;
-    //       }
-    //
-    //       var memberData = MainDish(
-    //         addDateTime: DateTime.now().millisecondsSinceEpoch,
-    //         name: mainDish.name,
-    //         sort: mainDish.sort,
-    //       );
-    //
-    //       currentMainDishList.add(memberData);
-    //
-    //       return Stream.value(currentMainDishList);
-    //     })
-    //     .flatMap((value) {
-    //       Map<String, dynamic> map = {};
-    //       map[FirebasePath.mainDish] = value.map((e) => e.toMap()).toList();
-    //       return db.update(map).asStream();
-    //     })
-    //     .doOnListen(() => _loadingSubject.add(true))
-    //     .doOnDone(() => _loadingSubject.add(false));
   }
 
   /// 新增飲料
-  Stream<void> addBeverage(InputData beverage) {
+  Stream<void> addBeverage(InputData inputData) {
     return Stream.value(currentBeverageList)
         .flatMap((value) {
-          int index = value.indexWhere((element) => element.name == beverage.name);
+          int index = value.indexWhere((element) => element.name == inputData.name);
           if (index != -1) {
             throw S.current.existed_member;
           }
 
-          var memberData = Beverage(
+          var data = Beverage(
             addDateTime: DateTime.now().millisecondsSinceEpoch,
-            name: beverage.name,
-            sort: beverage.sort,
+            name: inputData.name,
+            sort: inputData.sort,
           );
-          currentBeverageList.add(memberData);
 
-          return Stream.value(currentBeverageList);
+          return Stream.value(data);
         })
         .flatMap((value) {
-          Map<String, dynamic> map = {};
-          map[FirebasePath.beverage] = value.map((e) => e.toMap()).toList();
-          return db.update(map).asStream();
+          return db
+              .child(FirebasePath.beverage)
+              .child(value.addDateTime.toString())
+              .update(value.toMap())
+              .asStream();
         })
         .doOnListen(() => _loadingSubject.add(true))
         .doOnDone(() => _loadingSubject.add(false));
@@ -281,7 +260,7 @@ class HomePageBloc {
   /// 儲存訂單
   void saveOrder() {
     Map<String, dynamic> map = {};
-    map[_todayKey] = currentOrderList.map((e) => e.toMap()).toList();
+    map[_todayKey] = currentOrderList.map((e) => {e.memberName: e.toMap()}).toList();
 
     db.child(FirebasePath.order).update(map).then((value) => null);
   }
