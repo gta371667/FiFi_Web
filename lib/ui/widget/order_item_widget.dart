@@ -39,20 +39,22 @@ class OrderItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 15),
+      padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: [
-          Expanded(
-            child: Text(memberData.memberData.name),
+          SizedBox(
+            width: 100,
+            child: Container(
+              color: Colors.yellow,
+              child: Text(memberData.memberData.name),
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: _buildMainDish(),
           ),
           const SizedBox(width: 10),
-          Expanded(
-            child: _buildBeverage(),
-          ),
+          _buildBeverage(),
           IconButton(
             onPressed: () => deleteCallback.call(memberData),
             icon: const Icon(Icons.delete),
@@ -67,11 +69,29 @@ class OrderItemWidget extends StatelessWidget {
     return DropdownButton<MainDish>(
       isExpanded: true,
       value: memberData.mainDish,
+      selectedItemBuilder: (context) => mainDishList
+          .map(
+            (e) => Center(child: Text(e.name)),
+          )
+          .toList(),
       items: mainDishList
-          .map((e) => DropdownMenuItem<MainDish>(
-                child: Text(e.name),
-                value: e,
-              ))
+          .map(
+            (e) => DropdownMenuItem<MainDish>(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(e.name)),
+                    IconButton(
+                      onPressed: () => print('dddddd'),
+                      icon: const Icon(Icons.delete),
+                    )
+                  ],
+                ),
+              ),
+              value: e,
+            ),
+          )
           .toList(),
       onChanged: (value) {
         if (value == null) return;
@@ -83,7 +103,6 @@ class OrderItemWidget extends StatelessWidget {
   /// 下拉選單 - 飲料
   Widget _buildBeverage() {
     return DropdownButton<Beverage>(
-      isExpanded: true,
       value: memberData.beverage,
       items: beverageList
           .map((e) => DropdownMenuItem<Beverage>(

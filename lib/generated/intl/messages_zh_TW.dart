@@ -32,6 +32,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "existed_beverage": MessageLookupByLibrary.simpleMessage("該飲料已存在"),
         "existed_mainDish": MessageLookupByLibrary.simpleMessage("該主餐已存在"),
         "existed_member": MessageLookupByLibrary.simpleMessage("該人員已存在"),
-        "hint_sort": MessageLookupByLibrary.simpleMessage("排序(越小在前)")
+        "hint_sort": MessageLookupByLibrary.simpleMessage("排序(越小在前，預設為0)")
       };
 }

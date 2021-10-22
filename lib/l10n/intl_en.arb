@@ -11,5 +11,5 @@
     "existed_member": "Member is existed",
     "existed_mainDish": "MainDish is existed",
     "existed_beverage": "Beverage is existed",
-    "hint_sort": "Sort (smaller first)"
+    "hint_sort": "Sort (smaller first; default 0)"
 }

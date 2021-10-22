@@ -160,10 +160,10 @@ class S {
     );
   }
 
-  /// `Sort (smaller first)`
+  /// `Sort (smaller first; default 0)`
   String get hint_sort {
     return Intl.message(
-      'Sort (smaller first)',
+      'Sort (smaller first; default 0)',
       name: 'hint_sort',
       desc: '',
       args: [],

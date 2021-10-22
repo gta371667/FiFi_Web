@@ -31,7 +31,7 @@ class _AddDataDialogState extends State<AddDataDialog> {
   final TextEditingController _textEditingController = TextEditingController();
 
   /// 排序
-  final TextEditingController _sortController = TextEditingController(text: "0");
+  final TextEditingController _sortController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +56,7 @@ class _AddDataDialogState extends State<AddDataDialog> {
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: _sortController,
                       keyboardType: TextInputType.number,
@@ -108,9 +109,11 @@ class _AddDataDialogState extends State<AddDataDialog> {
               backgroundColor: Colors.blue,
             ),
             onPressed: () {
+              String sorString = _sortController.text.isNotEmpty ? _sortController.text : "0";
+
               Navigator.of(context).pop(InputData(
                 name: _textEditingController.text,
-                sort: int.parse(_sortController.text),
+                sort: int.parse(sorString),
               ));
             },
           ),

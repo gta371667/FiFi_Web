@@ -36,7 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("MainDish is existed"),
         "existed_member":
             MessageLookupByLibrary.simpleMessage("Member is existed"),
-        "hint_sort":
-            MessageLookupByLibrary.simpleMessage("Sort (smaller first)")
+        "hint_sort": MessageLookupByLibrary.simpleMessage(
+            "Sort (smaller first; default 0)")
       };
 }

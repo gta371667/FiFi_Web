@@ -30,6 +30,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "Button_Confirm": MessageLookupByLibrary.simpleMessage("确定"),
         "add_member_hint": MessageLookupByLibrary.simpleMessage("请输入姓名"),
         "existed_member": MessageLookupByLibrary.simpleMessage("該人員已存在"),
-        "hint_sort": MessageLookupByLibrary.simpleMessage("排序(越小在前)")
+        "hint_sort": MessageLookupByLibrary.simpleMessage("排序(越小在前，预设为0)")
       };
 }

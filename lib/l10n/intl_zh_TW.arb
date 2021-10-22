@@ -11,5 +11,5 @@
     "existed_member": "該人員已存在",
     "existed_mainDish": "該主餐已存在",
     "existed_beverage": "該飲料已存在",
-    "hint_sort": "排序(越小在前)"
+    "hint_sort": "排序(越小在前，預設為0)"
 }

@@ -87,13 +87,29 @@ class HomePageBloc {
         .doOnDone(() => _loadingSubject.add(false));
   }
 
+  /// 刪除人員
+  void deleteMember(String memberName) {
+    int mIdx = currentMemberList.indexWhere((element) => element.name == memberName);
+
+    if (mIdx != -1) {
+      db
+          .child(FirebasePath.member)
+          .child(currentMemberList[mIdx].addDateTime.toString())
+          .remove()
+          .asStream()
+          .doOnListen(() => _loadingSubject.add(true))
+          .doOnDone(() => _loadingSubject.add(false))
+          .listen((value) => {});
+    }
+  }
+
   /// 新增主餐
   Stream<void> addMainDish(InputData inputData) {
     return Stream.value(currentMainDishList)
         .flatMap((value) {
           int index = value.indexWhere((element) => element.name == inputData.name);
           if (index != -1) {
-            throw S.current.existed_member;
+            throw S.current.existed_mainDish;
           }
 
           var data = MainDish(
@@ -115,29 +131,13 @@ class HomePageBloc {
         .doOnDone(() => _loadingSubject.add(false));
   }
 
-  /// 刪除人員
-  void deleteMember(String memberName) {
-    int mIdx = currentMemberList.indexWhere((element) => element.name == memberName);
-
-    if (mIdx != -1) {
-      db
-          .child(FirebasePath.member)
-          .child(currentMemberList[mIdx].addDateTime.toString())
-          .remove()
-          .asStream()
-          .doOnListen(() => _loadingSubject.add(true))
-          .doOnDone(() => _loadingSubject.add(false))
-          .listen((value) => {});
-    }
-  }
-
   /// 新增飲料
   Stream<void> addBeverage(InputData inputData) {
     return Stream.value(currentBeverageList)
         .flatMap((value) {
           int index = value.indexWhere((element) => element.name == inputData.name);
           if (index != -1) {
-            throw S.current.existed_member;
+            throw S.current.existed_beverage;
           }
 
           var data = Beverage(
@@ -193,7 +193,7 @@ class HomePageBloc {
       }
       return a1.addDateTime.compareTo(a2.addDateTime);
     });
-    currentMainDishList.insert(0, MainDish.fromJson({}));
+    // currentMainDishList.insert(0, MainDish.fromJson({}));
   }
 
   /// 更新飲料
@@ -205,7 +205,7 @@ class HomePageBloc {
       }
       return a1.addDateTime.compareTo(a2.addDateTime);
     });
-    currentBeverageList.insert(0, Beverage.fromJson({}));
+    // currentBeverageList.insert(0, Beverage.fromJson({}));
   }
 
   /// 更新人員
@@ -276,24 +276,51 @@ class HomePageBloc {
   /// 冰紅 x 1 (彭)
   /// 溫紅 x 1 (冠)
   String getCopyText() {
+    String text = "";
+
+    /// 群組主餐
     var mainDishMap = groupBy<FiFiMenu, String>(currentOrderList, (obj) => obj.mainDish?.name ?? "")
       ..remove("");
 
-    String text = "";
-    mainDishMap.forEach((key, value) {
+    /// 排序主餐 - 依照下拉選單順序
+    var mKeys = mainDishMap.keys.toList()
+      ..sort((a, b) {
+        int aIdx = currentMainDishList.indexWhere((element) => element.name == a);
+        int bIdx = currentMainDishList.indexWhere((element) => element.name == b);
+        return aIdx.compareTo(bIdx);
+      });
+
+    /// 主餐文字
+    for (var key in mKeys) {
+      var value = mainDishMap[key]!;
       text += "$key x ${value.length} (";
       text += value.map((e) => e.memberData.name).join("、");
       text += ")\n";
-    });
+    }
 
-    text += "\n";
+    /// 群組飲料
     var beverageMap = groupBy<FiFiMenu, String>(currentOrderList, (obj) => obj.beverage?.name ?? "")
       ..remove("");
-    beverageMap.forEach((key, value) {
+
+    if (beverageMap.isNotEmpty) {
+      text += "\n";
+    }
+
+    /// 排序飲料 - 依照下拉選單順序
+    var bKeys = beverageMap.keys.toList()
+      ..sort((a, b) {
+        int aIdx = currentBeverageList.indexWhere((element) => element.name == a);
+        int bIdx = currentBeverageList.indexWhere((element) => element.name == b);
+        return aIdx.compareTo(bIdx);
+      });
+
+    /// 飲料文字
+    for (var key in bKeys) {
+      var value = beverageMap[key]!;
       text += "$key x ${value.length} (";
       text += value.map((e) => e.memberData.name).join("、");
       text += ")\n";
-    });
+    }
 
     return text.substring(0, text.length - 1);
   }
