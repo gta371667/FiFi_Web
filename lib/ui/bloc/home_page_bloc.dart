@@ -131,6 +131,22 @@ class HomePageBloc {
         .doOnDone(() => _loadingSubject.add(false));
   }
 
+  /// 刪除主餐
+  void deleteMainDish(MainDish mainDish) {
+    int index = currentMainDishList.indexWhere((element) => element.name == mainDish.name);
+
+    if (index != -1) {
+      db
+          .child(FirebasePath.mainDish)
+          .child(currentMainDishList[index].addDateTime.toString())
+          .remove()
+          .asStream()
+          .doOnListen(() => _loadingSubject.add(true))
+          .doOnDone(() => _loadingSubject.add(false))
+          .listen((value) => {});
+    }
+  }
+
   /// 新增飲料
   Stream<void> addBeverage(InputData inputData) {
     return Stream.value(currentBeverageList)
@@ -157,6 +173,22 @@ class HomePageBloc {
         })
         .doOnListen(() => _loadingSubject.add(true))
         .doOnDone(() => _loadingSubject.add(false));
+  }
+
+  /// 刪除飲料
+  void deleteBeverage(Beverage beverage) {
+    int index = currentBeverageList.indexWhere((element) => element.name == beverage.name);
+
+    if (index != -1) {
+      db
+          .child(FirebasePath.beverage)
+          .child(currentBeverageList[index].addDateTime.toString())
+          .remove()
+          .asStream()
+          .doOnListen(() => _loadingSubject.add(true))
+          .doOnDone(() => _loadingSubject.add(false))
+          .listen((value) => {});
+    }
   }
 
   /// 選擇主餐事件

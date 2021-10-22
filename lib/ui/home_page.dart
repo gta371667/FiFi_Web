@@ -79,13 +79,25 @@ class _HomePageState extends State<HomePage> {
                 memberData: data,
                 beverageList: bloc.currentBeverageList,
                 mainDishList: bloc.currentMainDishList,
-                beverageCallback: (menu, beverage) {
+                beverageCallback: (type, menu, beverage) {
                   bloc.selectBeverage(menu, beverage);
                 },
-                mainDishCallback: (menu, mainDish) {
+                mainDishCallback: (type, menu, mainDish) {
+                  switch (type) {
+                    case CallBackType.select:
+                      bloc.selectMainDish(menu, mainDish);
+                      break;
+                    case CallBackType.modify:
+                      // TODO: Handle this case.
+                      break;
+                    case CallBackType.delete:
+                      bloc.deleteMainDish(mainDish);
+                      break;
+                  }
+
                   bloc.selectMainDish(menu, mainDish);
                 },
-                deleteCallback: (menu) {
+                memberCallback: (type, menu) {
                   bloc.deleteMember(menu.memberData.name);
                 },
               ),
@@ -239,5 +251,11 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
   }
 }
