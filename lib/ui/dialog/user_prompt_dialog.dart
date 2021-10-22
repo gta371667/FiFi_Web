@@ -87,7 +87,7 @@ class UserPromptDialog extends StatelessWidget {
         runAlignment: WrapAlignment.center,
         children: [
           ConstrainedBox(
-            constraints: const BoxConstraints.tightForFinite(width: 280),
+            constraints: const BoxConstraints.tightForFinite(width: 300),
             child: Material(
               clipBehavior: Clip.antiAliasWithSaveLayer,
               shape: RoundedRectangleBorder(
@@ -257,7 +257,7 @@ class UserPromptDialog extends StatelessWidget {
         const SizedBox(width: 4),
         Expanded(
           child: Ink(
-            color: ColorRes.Pop_btnBgColor,
+            color: ColorRes.G_button1Color,
             child: InkWell(
               splashColor: Colors.white.withOpacity(0.5),
               highlightColor: Colors.white.withOpacity(0.5),

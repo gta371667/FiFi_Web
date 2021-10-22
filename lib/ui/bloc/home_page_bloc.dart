@@ -354,7 +354,11 @@ class HomePageBloc {
       text += ")\n";
     }
 
-    return text.substring(0, text.length - 1);
+    if (text.endsWith("\n")) {
+      return text.substring(0, text.length - 1);
+    }
+
+    return text;
   }
 
   void dispose() {

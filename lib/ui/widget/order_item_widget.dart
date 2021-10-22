@@ -51,82 +51,83 @@ class OrderItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      padding: const EdgeInsets.only(left: 10),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 100,
-            child: Container(
-              color: Colors.yellow,
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: 70,
+              margin: const EdgeInsets.only(left: 10),
               child: Text(memberData.memberData.name),
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _buildMainDish(context),
-          ),
-          const SizedBox(width: 10),
-          _buildBeverage(context),
-          IconButton(
-            onPressed: () => memberCallback.call(CallBackType.delete, memberData),
-            icon: const Icon(Icons.delete),
-          ),
-        ],
-      ),
+            const SizedBox(width: 10),
+            _buildMainDish(context),
+            const SizedBox(width: 10),
+            _buildBeverage(context),
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: () => memberCallback.call(CallBackType.delete, memberData),
+              icon: const Icon(Icons.delete),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   /// 下拉選單 - 主餐
   Widget _buildMainDish(BuildContext context) {
-    return DropdownButton<MainDish>(
-      isExpanded: true,
-      value: memberData.mainDish,
-      selectedItemBuilder: (context) => mainDishList
-          .map(
-            (e) => Center(child: Text(e.name)),
-          )
-          .toList(),
-      items: mainDishList
-          .map(
-            (e) => DropdownMenuItem<MainDish>(
-              child: GestureDetector(
-                onLongPress: () {
-                  Navigator.of(context).pop();
-                  mainDishCallback.call(CallBackType.modify, memberData, e);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Row(
-                    children: [
-                      Expanded(child: Text(e.name)),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          mainDishCallback.call(CallBackType.delete, memberData, e);
-                        },
-                        icon: const Icon(Icons.delete),
-                      )
-                    ],
+    return SizedBox(
+      width: 160,
+      child: DropdownButton<MainDish>(
+        value: memberData.mainDish,
+        isExpanded: true,
+        selectedItemBuilder: (context) => mainDishList
+            .map(
+              (e) => Center(child: Text(e.name)),
+            )
+            .toList(),
+        items: mainDishList
+            .map(
+              (e) => DropdownMenuItem<MainDish>(
+                child: GestureDetector(
+                  onLongPress: () {
+                    Navigator.of(context).pop();
+                    mainDishCallback.call(CallBackType.modify, memberData, e);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(e.name)),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            mainDishCallback.call(CallBackType.delete, memberData, e);
+                          },
+                          icon: const Icon(Icons.delete),
+                        )
+                      ],
+                    ),
                   ),
                 ),
+                value: e,
               ),
-              value: e,
-            ),
-          )
-          .toList(),
-      onChanged: (value) {
-        if (value == null) return;
-        mainDishCallback.call(CallBackType.select, memberData, value);
-      },
+            )
+            .toList(),
+        onChanged: (value) {
+          if (value == null) return;
+          mainDishCallback.call(CallBackType.select, memberData, value);
+        },
+      ),
     );
   }
 
   /// 下拉選單 - 飲料
   Widget _buildBeverage(BuildContext context) {
     return SizedBox(
-      width: 90,
+      width: 100,
       child: DropdownButton<Beverage>(
         isExpanded: true,
         value: memberData.beverage,

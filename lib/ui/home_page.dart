@@ -36,10 +36,13 @@ class _HomePageState extends State<HomePage> {
           children: [
             Column(
               children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _buildBottom(),
+                ),
                 Expanded(
                   child: _buildMember(),
                 ),
-                _buildBottom(),
               ],
             ),
             _buildLoading(),
@@ -80,7 +83,17 @@ class _HomePageState extends State<HomePage> {
                 beverageList: bloc.currentBeverageList,
                 mainDishList: bloc.currentMainDishList,
                 beverageCallback: (type, menu, beverage) {
-                  bloc.selectBeverage(menu, beverage);
+                  switch (type) {
+                    case CallBackType.select:
+                      bloc.selectBeverage(menu, beverage);
+                      break;
+                    case CallBackType.modify:
+                      // TODO: Handle this case.
+                      break;
+                    case CallBackType.delete:
+                      bloc.deleteBeverage(beverage);
+                      break;
+                  }
                 },
                 mainDishCallback: (type, menu, mainDish) {
                   switch (type) {
@@ -94,8 +107,6 @@ class _HomePageState extends State<HomePage> {
                       bloc.deleteMainDish(mainDish);
                       break;
                   }
-
-                  bloc.selectMainDish(menu, mainDish);
                 },
                 memberCallback: (type, menu) {
                   bloc.deleteMember(menu.memberData.name);
@@ -117,36 +128,39 @@ class _HomePageState extends State<HomePage> {
             AddDataEnum.member,
             S.of(context).add_member_hint,
           ),
-          child: const Text('addMember'),
+          child: const Text('新增人員'),
         ),
+        const SizedBox(width: 10),
         TextButton(
           onPressed: () => _showAddDataDialog(
             AddDataEnum.mainDish,
-            'mainDish',
+            '請輸入主餐',
           ),
-          child: const Text('mainDish'),
+          child: const Text('新增主餐'),
         ),
+        const SizedBox(width: 10),
         TextButton(
           onPressed: () => _showAddDataDialog(
             AddDataEnum.beverage,
-            'beverage',
+            '請輸入飲料',
           ),
-          child: const Text('beverage'),
+          child: const Text('新增飲料'),
         ),
+        const SizedBox(width: 10),
         TextButton(
           onPressed: () async {
             // Clipboard.setData(const ClipboardData(text: "_copy"));
             String copyText = bloc.getCopyText();
-            if (copyText.isEmpty) return;
-            showText();
-            FlutterClipboard.copy(copyText).then((value) => null);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Copied to Clipboard"),
-              ),
-            );
+
+            showText(bloc.getCopyText());
+            // FlutterClipboard.copy(copyText).then((value) => null);
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(
+            //     content: Text("Copied to Clipboard"),
+            //   ),
+            // );
           },
-          child: const Text('copy'),
+          child: const Text('確認菜單'),
         ),
       ],
     );
@@ -191,7 +205,6 @@ class _HomePageState extends State<HomePage> {
               promptEnum: UserPromptEnum.error,
               buttonEnum: UserPromptButtonEnum.one,
               content: err.toString(),
-              cancelable: false,
             );
           },
         );
@@ -211,7 +224,6 @@ class _HomePageState extends State<HomePage> {
               promptEnum: UserPromptEnum.error,
               buttonEnum: UserPromptButtonEnum.one,
               content: err.toString(),
-              cancelable: false,
             );
           },
         );
@@ -231,7 +243,6 @@ class _HomePageState extends State<HomePage> {
               promptEnum: UserPromptEnum.error,
               buttonEnum: UserPromptButtonEnum.one,
               content: err.toString(),
-              cancelable: false,
             );
           },
         );
@@ -239,15 +250,32 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void showText() {
+  void showText(String copyText) {
+    if (copyText.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const UserPromptDialog(
+            promptEnum: UserPromptEnum.error,
+            content: "未選擇任何餐點",
+          );
+        },
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) {
         return UserPromptDialog(
-          promptEnum: UserPromptEnum.error,
-          buttonEnum: UserPromptButtonEnum.one,
+          promptEnum: UserPromptEnum.ok,
+          buttonEnum: UserPromptButtonEnum.two,
           content: bloc.getCopyText(),
-          cancelable: false,
+          okButtonText: "複製",
+          onOkCallback: () {
+            FlutterClipboard.copy(copyText).then((value) => null);
+            Navigator.of(context).pop();
+          },
         );
       },
     );
