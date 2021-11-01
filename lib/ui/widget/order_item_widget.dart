@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_test/model/fifi.dart';
 
-///
 typedef MainDishCallback = void Function(CallBackType type, FiFiMenu fiFiMenu, MainDish mainDish);
 
 typedef BeverageCallback = void Function(CallBackType type, FiFiMenu fiFiMenu, Beverage beverage);
@@ -51,35 +50,34 @@ class OrderItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              width: 70,
-              margin: const EdgeInsets.only(left: 10),
-              child: Text(memberData.memberData.name),
-            ),
-            const SizedBox(width: 10),
-            _buildMainDish(context),
-            const SizedBox(width: 10),
-            _buildBeverage(context),
-            const SizedBox(width: 10),
-            IconButton(
-              onPressed: () => memberCallback.call(CallBackType.delete, memberData),
-              icon: const Icon(Icons.delete),
-            ),
-          ],
-        ),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 55,
+            margin: const EdgeInsets.only(left: 5, right: 5),
+            child: Text(memberData.memberData.name),
+          ),
+          const SizedBox(width: 10),
+          _buildMainDish(context),
+          const SizedBox(width: 10),
+          _buildBeverage(context),
+          const SizedBox(width: 10),
+          IconButton(
+            onPressed: () => memberCallback.call(CallBackType.delete, memberData),
+            icon: const Icon(Icons.delete),
+          ),
+        ],
+      ),
     );
   }
 
   /// 下拉選單 - 主餐
   Widget _buildMainDish(BuildContext context) {
     return SizedBox(
-      width: 160,
+      width: 155,
       child: DropdownButton<MainDish>(
         value: memberData.mainDish,
         isExpanded: true,
@@ -127,7 +125,7 @@ class OrderItemWidget extends StatelessWidget {
   /// 下拉選單 - 飲料
   Widget _buildBeverage(BuildContext context) {
     return SizedBox(
-      width: 100,
+      width: 95,
       child: DropdownButton<Beverage>(
         isExpanded: true,
         value: memberData.beverage,
@@ -160,20 +158,6 @@ class OrderItemWidget extends StatelessWidget {
           beverageCallback.call(CallBackType.select, memberData, value);
         },
       ),
-    );
-
-    return DropdownButton<Beverage>(
-      value: memberData.beverage,
-      items: beverageList
-          .map((e) => DropdownMenuItem<Beverage>(
-                child: Text(e.name),
-                value: e,
-              ))
-          .toList(),
-      onChanged: (value) {
-        if (value == null) return;
-        beverageCallback.call(CallBackType.select, memberData, value);
-      },
     );
   }
 }

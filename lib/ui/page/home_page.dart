@@ -5,6 +5,7 @@ import 'package:flutter_web_test/model/fifi.dart';
 import 'package:flutter_web_test/ui/bloc/home_page_bloc.dart';
 import 'package:flutter_web_test/ui/dialog/add_data_dialog.dart';
 import 'package:flutter_web_test/ui/dialog/user_prompt_dialog.dart';
+import 'package:flutter_web_test/ui/page/history_page.dart';
 import 'package:flutter_web_test/ui/widget/first_loading_widget.dart';
 import 'package:flutter_web_test/ui/widget/order_item_widget.dart';
 
@@ -31,6 +32,16 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("FiFi Menu (${bloc.todayKey})"),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const HistoryPage(),
+              ),
+            );
+          },
+          child: const Icon(Icons.history),
         ),
         body: Stack(
           children: [
