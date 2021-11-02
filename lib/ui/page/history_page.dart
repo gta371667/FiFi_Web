@@ -81,6 +81,7 @@ class _HistoryPageState extends State<HistoryPage> {
         var dataList = snapshot.requireData;
 
         return ListView.builder(
+          itemExtent: 64,
           itemCount: dataList.length,
           itemBuilder: (context, index) {
             var data = dataList[index];
@@ -88,7 +89,7 @@ class _HistoryPageState extends State<HistoryPage> {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: HistoryOrderItemWidget(
-                memberData: data,
+                fifiMenu: data,
                 beverageList: bloc.currentBeverageList,
                 mainDishList: bloc.currentMainDishList,
               ),

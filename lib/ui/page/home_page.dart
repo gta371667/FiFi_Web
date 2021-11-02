@@ -84,9 +84,11 @@ class _HomePageState extends State<HomePage> {
         var dataList = snapshot.data ?? [];
 
         return ListView.builder(
+          itemExtent: 64,
           itemCount: dataList.length,
           itemBuilder: (context, index) {
             var data = dataList[index];
+
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: OrderItemWidget(

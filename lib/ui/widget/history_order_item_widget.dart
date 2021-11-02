@@ -5,13 +5,13 @@ import 'package:flutter_web_test/model/fifi.dart';
 class HistoryOrderItemWidget extends StatelessWidget {
   const HistoryOrderItemWidget({
     Key? key,
-    required this.memberData,
+    required this.fifiMenu,
     required this.mainDishList,
     required this.beverageList,
   }) : super(key: key);
 
   /// 當前訂單
-  final FiFiMenu memberData;
+  final FiFiMenu fifiMenu;
 
   /// 主餐列表
   final List<MainDish> mainDishList;
@@ -29,7 +29,7 @@ class HistoryOrderItemWidget extends StatelessWidget {
             alignment: Alignment.center,
             width: 55,
             margin: const EdgeInsets.only(left: 5, right: 5),
-            child: Text(memberData.memberData.name),
+            child: Text(fifiMenu.memberData.name),
           ),
           const SizedBox(width: 10),
           _buildMainDish(context),
@@ -45,7 +45,7 @@ class HistoryOrderItemWidget extends StatelessWidget {
     return SizedBox(
       width: 160,
       child: DropdownButton<MainDish>(
-        value: memberData.mainDish,
+        value: fifiMenu.mainDish,
         isExpanded: true,
         items: mainDishList
             .map(
@@ -69,7 +69,7 @@ class HistoryOrderItemWidget extends StatelessWidget {
       width: 100,
       child: DropdownButton<Beverage>(
         isExpanded: true,
-        value: memberData.beverage,
+        value: fifiMenu.beverage,
         items: beverageList
             .map(
               (e) => DropdownMenuItem<Beverage>(

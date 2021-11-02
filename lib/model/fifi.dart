@@ -27,6 +27,7 @@ class FiFiMenu {
       memberData: MemberData(
         name: json['memberName'] ?? "",
         addDateTime: json['addDateTime'] ?? -1,
+        sort: json['sort'] ?? 0,
       ),
       mainDish: m1,
       beverage: b1,

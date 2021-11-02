@@ -48,47 +48,22 @@ class HistoryPageBloc {
         return;
       }
 
+      Map<dynamic, dynamic> memberMap = event.snapshot.value[FirebasePath.member] ?? {};
       Map<dynamic, dynamic> historyOrder = event.snapshot.value[FirebasePath.order] ?? {};
 
+      /// 人員
+      _updateMember(memberMap);
+
       /// 不顯示當日菜單
-      // historyOrder.remove(todayKey);
-
-      var temp = historyOrder.map(
-        (key, value) {
-          List<FiFiMenu> data = [];
-          if (value is Map) {
-            data = value.entries.map((e) => FiFiMenu.fromJson(e.value)).toList();
-          }
-          return MapEntry<String, List<FiFiMenu>>(key, data);
-        },
-      );
-
-      var sortedKeys = temp.keys.toList(growable: false)
-        ..sort((k1, k2) {
-          final dateFormat = DateFormat("yyyy-MM-dd");
-          var format1 = dateFormat.parse(k1).millisecondsSinceEpoch;
-          var format2 = dateFormat.parse(k2).millisecondsSinceEpoch;
-          return format2.compareTo(format1);
-        });
-
-      historyMap.clear();
-      for (var element in sortedKeys) {
-        historyMap[element] = temp[element] ?? [];
-      }
-
+      historyOrder.remove(todayKey);
+      historyMap = _mapToHistoryList(historyOrder);
       if (historyMap.isEmpty) {
         return;
       }
 
       /// 日期
       currentDateKey ??= historyMap.keys.first;
-      _dateSubject.add(sortedKeys);
-
-      /// 歷史主餐
-      // _updateMainDish();
-
-      /// 歷史飲料
-      // _updateBeverage();
+      _dateSubject.add(historyMap.keys.toList());
 
       /// 歷史訂單
       _setOrderList(historyMap[currentDateKey] ?? []);
@@ -106,8 +81,46 @@ class HistoryPageBloc {
     _setOrderList(data);
   }
 
-  /// 過濾重複 - 主餐
-  void _updateMainDish(List<FiFiMenu> orders) {
+  /// 轉換至歷史訂單
+  Map<String, List<FiFiMenu>> _mapToHistoryList(Map<dynamic, dynamic> historyOrder) {
+    var temp = historyOrder.map(
+      (key, value) {
+        List<FiFiMenu> data = [];
+        if (value is Map) {
+          data = value.entries.map((e) => FiFiMenu.fromJson(e.value)).toList();
+        }
+        return MapEntry<String, List<FiFiMenu>>(key, data);
+      },
+    );
+
+    var sortedKeys = temp.keys.toList(growable: false)
+      ..sort((k1, k2) {
+        final dateFormat = DateFormat("yyyy-MM-dd");
+        var format1 = dateFormat.parse(k1).millisecondsSinceEpoch;
+        var format2 = dateFormat.parse(k2).millisecondsSinceEpoch;
+        return format2.compareTo(format1);
+      });
+
+    Map<String, List<FiFiMenu>> map = {};
+    for (var element in sortedKeys) {
+      map[element] = temp[element] ?? [];
+    }
+    return map;
+  }
+
+  /// 更新人員
+  void _updateMember(Map<dynamic, dynamic> data) {
+    currentMemberList = data.entries.map((e) => MemberData.fromJson(e.value)).toList();
+    currentMemberList.sort((a1, a2) {
+      if (a1.sort != a2.sort) {
+        return a1.sort.compareTo(a2.sort);
+      }
+      return a1.addDateTime.compareTo(a2.addDateTime);
+    });
+  }
+
+  /// 取得該日主餐 - 過濾重複
+  void _filterMainDish(List<FiFiMenu> orders) {
     var dataList = orders
         .map(
           (e) => e.mainDish,
@@ -127,8 +140,8 @@ class HistoryPageBloc {
     }
   }
 
-  /// 過濾重複 - 飲料
-  void _updateBeverage(List<FiFiMenu> orders) {
+  /// 取得該日飲料 - 過濾重複
+  void _filterBeverage(List<FiFiMenu> orders) {
     var dataList = orders
         .map(
           (e) => e.beverage,
@@ -150,27 +163,30 @@ class HistoryPageBloc {
 
   /// 更新訂單列表
   void _setOrderList(List<FiFiMenu> orders) {
-    _updateMainDish(orders);
-    _updateBeverage(orders);
-
-    // var data = orders
-    //   ..sort((a1, a2) {
-    //     if (a1.memberData.sort != a2.memberData.sort) {
-    //       return a1.memberData.sort.compareTo(a2.memberData.sort);
-    //     }
-    //     return a1.memberData.addDateTime.compareTo(a2.memberData.addDateTime);
-    //   });
+    _filterMainDish(orders);
+    _filterBeverage(orders);
 
     var data = orders.map(
       (e) {
         MainDish? mainDish = e.mainDish;
         Beverage? beverage = e.beverage;
 
+        /// 人員排序
+        int memberIndex = currentMemberList.indexWhere((element) => element.name == e.memberData.name);
+        if (memberIndex != -1) {
+          int sort = currentMemberList[memberIndex].sort;
+          if (e.memberData.sort == 0 && e.memberData.sort != sort) {
+            e.memberData.sort = sort;
+          }
+        }
+
+        /// 當前主餐
         int mIdx = currentMainDishList.indexWhere((element) => element.name == mainDish?.name);
         if (mIdx != -1) {
           mainDish = currentMainDishList[mIdx];
         }
 
+        /// 當前飲料
         int bIdx = currentBeverageList.indexWhere((element) => element.name == beverage?.name);
         if (bIdx != -1) {
           beverage = currentBeverageList[bIdx];

@@ -31,7 +31,8 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [...S.delegate.supportedLocales],
-      home: const HistoryPage(),
+      // home: const HistoryPage(),
+      home: const HomePage(),
     );
   }
 }
