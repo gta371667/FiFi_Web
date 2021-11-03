@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_test/model/fifi.dart';
 import 'package:flutter_web_test/ui/bloc/history_page_bloc.dart';
+import 'package:flutter_web_test/ui/style/style.dart';
 import 'package:flutter_web_test/ui/widget/history_order_item_widget.dart';
 
 /// 歷史紀錄
@@ -28,12 +29,22 @@ class _HistoryPageState extends State<HistoryPage> {
       top: false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("FiFi Menu 歷史紀錄"),
+          title: const Hero(
+            tag: HeroTags.toHistoryPage,
+            child: Text(
+              "FiFi Menu 歷史紀錄",
+              style: appBarTextStyle,
+            ),
+          ),
         ),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            Container(
+              margin: const EdgeInsets.only(
+                top: 8.0,
+                left: (55 + 160 + 100) / 2,
+              ),
               child: _buildSpinner(),
             ),
             Expanded(

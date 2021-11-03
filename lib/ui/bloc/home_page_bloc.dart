@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import "package:collection/collection.dart";
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_web_test/generated/l10n.dart';
@@ -21,6 +23,9 @@ class HomePageBloc {
 
   Stream<bool> get loadingStream => _loadingSubject.stream;
 
+  /// Firebase監聽
+  StreamSubscription<Event>? databaseListener;
+
   /// 主餐列表
   List<MainDish> currentMainDishList = [];
 
@@ -32,7 +37,9 @@ class HomePageBloc {
 
   /// 監聽資料變化
   void initFirebase() {
-    db.onValue.listen((event) {
+    _loadingSubject.add(true);
+
+    databaseListener = db.onValue.listen((event) {
       if (event.snapshot.value == null) {
         return;
       }
@@ -51,11 +58,12 @@ class HomePageBloc {
       /// 人員
       _updateMember(memberMap);
 
-      var g = todayOrder;
-      var c = todayOrder;
-
       /// 訂單
       _setOrderList(todayOrder.entries.map((e) => FiFiMenu.fromJson(e.value)).toList());
+
+      if (_loadingSubject.value) {
+        Future.delayed(const Duration(milliseconds: 800)).then((value) => _loadingSubject.add(false));
+      }
     });
   }
 
@@ -225,7 +233,6 @@ class HomePageBloc {
       }
       return a1.addDateTime.compareTo(a2.addDateTime);
     });
-    // currentMainDishList.insert(0, MainDish.fromJson({}));
   }
 
   /// 更新飲料
@@ -237,7 +244,6 @@ class HomePageBloc {
       }
       return a1.addDateTime.compareTo(a2.addDateTime);
     });
-    // currentBeverageList.insert(0, Beverage.fromJson({}));
   }
 
   /// 更新人員
@@ -361,8 +367,10 @@ class HomePageBloc {
     return text;
   }
 
+  /// 關閉
   void dispose() {
     _orderSubject.close();
     _loadingSubject.close();
+    databaseListener?.cancel();
   }
 }

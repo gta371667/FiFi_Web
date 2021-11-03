@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_web_test/model/fifi.dart';
 import 'package:flutter_web_test/res/firebase_path.dart';
@@ -39,11 +41,15 @@ class HistoryPageBloc {
   /// 所有歷史菜單
   Map<String, List<FiFiMenu>> historyMap = {};
 
+  /// 當前日期
   String? currentDateKey;
+
+  /// Firebase監聽
+  StreamSubscription<Event>? databaseListener;
 
   /// 監聽資料變化
   void initFirebase() {
-    db.onValue.listen((event) {
+    databaseListener = db.onValue.listen((event) {
       if (event.snapshot.value == null) {
         return;
       }
@@ -208,8 +214,10 @@ class HistoryPageBloc {
     _orderSubject.add(data);
   }
 
+  /// 關閉
   void dispose() {
     _orderSubject.close();
     _loadingSubject.close();
+    databaseListener?.cancel();
   }
 }

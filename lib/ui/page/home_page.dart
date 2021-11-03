@@ -1,11 +1,13 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_web_test/generated/l10n.dart';
 import 'package:flutter_web_test/model/fifi.dart';
 import 'package:flutter_web_test/ui/bloc/home_page_bloc.dart';
 import 'package:flutter_web_test/ui/dialog/add_data_dialog.dart';
 import 'package:flutter_web_test/ui/dialog/user_prompt_dialog.dart';
 import 'package:flutter_web_test/ui/page/history_page.dart';
+import 'package:flutter_web_test/ui/style/style.dart';
 import 'package:flutter_web_test/ui/widget/first_loading_widget.dart';
 import 'package:flutter_web_test/ui/widget/order_item_widget.dart';
 
@@ -31,18 +33,62 @@ class _HomePageState extends State<HomePage> {
       top: false,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("FiFi Menu (${bloc.todayKey})"),
+          title: Text(
+            "FiFi Menu (${bloc.todayKey})",
+            style: appBarTextStyle,
+          ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const HistoryPage(),
-              ),
-            );
-          },
-          child: const Icon(Icons.history),
+        floatingActionButton: SpeedDial(
+          heroTag: HeroTags.toHistoryPage,
+          spaceBetweenChildren: 6,
+          icon: Icons.menu,
+          activeChild: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Icon(Icons.close),
+          ),
+          children: [
+            SpeedDialChild(
+              child: const Icon(Icons.history),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              label: 'History',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => const HistoryPage(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
+        // floatingActionButton: ExpandableFab(
+        //   distance: 100,
+        //   children: [
+        //     ActionButton(
+        //       onPressed: () => {
+        //         Navigator.of(context).push(
+        //           MaterialPageRoute(
+        //             builder: (ctx) => const HistoryPage(),
+        //           ),
+        //         )
+        //       },
+        //       icon: const Icon(Icons.format_size),
+        //     ),
+        //     ActionButton(
+        //       onPressed: () => {},
+        //       icon: const Icon(Icons.insert_photo),
+        //     ),
+        //     ActionButton(
+        //       onPressed: () => {},
+        //       icon: const Icon(Icons.videocam),
+        //     ),
+        //   ],
+        // ),
         body: Stack(
           children: [
             Column(
@@ -70,7 +116,6 @@ class _HomePageState extends State<HomePage> {
       initialData: false,
       builder: (context, snapshot) {
         bool isLoading = snapshot.requireData;
-
         return isLoading ? const FirstLoadingWidget() : const SizedBox();
       },
     );
@@ -163,7 +208,7 @@ class _HomePageState extends State<HomePage> {
         TextButton(
           onPressed: () async {
             // Clipboard.setData(const ClipboardData(text: "_copy"));
-            String copyText = bloc.getCopyText();
+            // String copyText = bloc.getCopyText();
 
             showText(bloc.getCopyText());
             // FlutterClipboard.copy(copyText).then((value) => null);
